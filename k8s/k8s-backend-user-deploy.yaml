@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: k8s-backend-user-deployment
 spec:
-  replicas: 3  # 원하는 파드 복제본 수 (기본값: 1)
+  replicas: 1  # 원하는 파드 복제본 수 (기본값: 1)
   selector:
     matchLabels:
       app: k8s-backend-user  # 템플릿의 labels와 일치해야 함
@@ -14,18 +14,31 @@ spec:
     spec:
       containers:
       - name: k8s-backend-user
-        image: wkddnjs9/k8s-backend-user:0.0.1-SNAPSHOT
+        image: wkddnjs9/k8s-backend-user:0.0.6
         imagePullPolicy: Always
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
         ports:
         - containerPort: 8080
-        volumeMount:
-        - mountPath: /etc/config
-          name: backend-user-config-volume
+        volumeMounts:
+          - mountPath: /etc/config
+            name: backend-user-config-volume
+            readOnly: true
+          - name: backend-user-secret-volume
+            mountPath: /etc/secret
+            readOnly: true
 
       volumes:
-        - name: backend-user-config-volume
-          configMap:
-            name: backend-user-config
-            items:
-              - key: application-dev.yml
-                path: application-dev.yml
+      - name: backend-user-config-volume
+        configMap:
+          name: backend-user-config
+          items:
+          - key: application-dev.yml
+            path: application-dev.yml
+      - name: backend-user-secret-volume
+        secret:
+          secretName: backend-user-secret
+          items:
+          - key: application-secret.yml
+            path: application-secret.yml
