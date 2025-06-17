@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 공개 API 중 사용자 인증(회원가입, 로그인 등) 관련 기능을 제공하는 컨트롤러입니다.
@@ -48,5 +45,10 @@ public class UserAuthController {
     public ApiResponseDto<TokenDto.AccessToken> refresh(@RequestBody @Valid SiteUserRefreshDto refreshDto) {
         TokenDto.AccessToken token = siteUserService.refresh(refreshDto);
         return ApiResponseDto.createOk(token);
+    }
+
+    @GetMapping(value = "/test")
+    public ApiResponseDto<String> test() {
+        return ApiResponseDto.createOk("버전 1입니다.");
     }
 }
